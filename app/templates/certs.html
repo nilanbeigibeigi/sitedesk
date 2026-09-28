@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% block title %}Certificates{% endblock %}
+{% block main %}
+<h1>Worker certificates</h1>
+<p class="sub">Everyone needs valid {{ required|join(' and ') }} to be cleared for site work. Expiring means within 30 days.</p>
+<div class="panel">
+  <table><tr><th>Worker</th><th>Cleared?</th><th>Certificates</th></tr>
+  {% for w in workers %}
+    <tr><td><b>{{ w.name }}</b><div class="muted small">{{ w.trade }} · {{ w.site }}</div></td>
+    <td>{% if w.cleared %}<span class="pill ok">Cleared</span>{% else %}<span class="pill bad">Not cleared</span><div class="small muted">Needs: {{ w.missing|join(', ') }}</div>{% endif %}</td>
+    <td>{% for c in w.certs %}{% set st = cert_status(c.expires_on) %}
+      <span class="pill {{ 'ok' if st=='ok' else 'warn' if st=='expiring' else 'bad' }}" title="Expires {{ c.expires_on }}">{{ c.cert_type }} · {{ c.expires_on }}</span>
+    {% endfor %}</td></tr>
+  {% endfor %}
+  </table>
+</div>
+<div class="panel"><h2>Add or renew a certificate</h2>
+  <form class="stack" method="post" action="/certs">
+    <div class="row2">
+      <label>Worker<select name="worker_id">{% for w in workers %}<option value="{{ w.id }}">{{ w.name }}</option>{% endfor %}</select></label>
+      <label>Certificate<select name="cert_type">{% for c in cert_types %}<option>{{ c }}</option>{% endfor %}</select></label>
+      <label>Expires on<input type="date" name="expires_on" required></label>
+    </div>
+    <div><button class="btn" type="submit">Save certificate</button></div>
+  </form>
+</div>
+{% endblock %}

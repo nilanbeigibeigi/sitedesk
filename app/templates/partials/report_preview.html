@@ -1,0 +1,19 @@
+{% if not d.ai_ok %}<p class="msg warn">The AI isn't available right now ({{ d.error }}), so fill the fields in yourself. The safety keyword check still ran.</p>{% endif %}
+<form class="stack" hx-post="/reports">
+  <h2>Check the report for {{ site.name }}</h2>
+  <input type="hidden" name="site_id" value="{{ site_id }}"><input type="hidden" name="date" value="{{ date }}">
+  <input type="hidden" name="author" value="{{ author }}"><input type="hidden" name="raw_notes" value="{{ raw_notes }}">
+  {% if d.safety %}<div class="flag"><b>Safety flags</b>
+{{ d.safety }}</div>{% endif %}
+  <div class="row2">
+    <label>Crew on site<input name="crew_count" value="{{ d.crew_count if d.crew_count is not none else '' }}" inputmode="numeric"></label>
+    <label>Weather<input name="weather" value="{{ d.weather }}"></label>
+    <label>Delay hours<input name="delay_hours" value="{{ d.delay_hours }}" inputmode="decimal"></label>
+  </div>
+  <label>Summary for the project manager<input name="summary" value="{{ d.summary }}"></label>
+  <label>Work done (one per line)<textarea name="work_done">{{ d.work_done }}</textarea></label>
+  <label>Delays<textarea name="delays">{{ d.delays }}</textarea></label>
+  <label>Safety issues<textarea name="safety">{{ d.safety }}</textarea></label>
+  <label>Materials needed<textarea name="materials">{{ d.materials }}</textarea></label>
+  <div><button class="btn dark" type="submit">Save report</button></div>
+</form>

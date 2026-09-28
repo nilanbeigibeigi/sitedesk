@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% block title %}RFIs{% endblock %}
+{% block main %}
+<h1>RFIs</h1>
+<p class="sub">Requests for information to architects, engineers and clients. Overdue ones are marked red, because every late answer can hold up a crew.</p>
+<div class="panel">
+  <table><tr><th>RFI</th><th class="hide-sm">Question</th><th>Waiting on</th><th>Due</th><th>Answer</th></tr>
+  <tbody>{% for r in rfis %}{% include "partials/rfi_row.html" %}{% endfor %}</tbody>
+  </table>
+</div>
+<div class="panel"><h2>New RFI</h2>
+  <form class="stack" method="post" action="/rfis">
+    <div class="row2">
+      <label>Site<select name="site_id">{% for s in sites %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select></label>
+      <label>Send to<input name="to_party" required placeholder="e.g. Architect"></label>
+      <label>Answer needed by<input type="date" name="due_on" value="{{ due_default }}" required></label>
+    </div>
+    <label>Subject<input name="subject" required placeholder="e.g. Stair railing height"></label>
+    <label>Question<textarea name="question" required></textarea></label>
+    <div><button class="btn" type="submit">Create RFI</button></div>
+  </form>
+</div>
+{% endblock %}

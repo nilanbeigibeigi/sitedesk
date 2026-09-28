@@ -1,0 +1,32 @@
+{% extends "base.html" %}{% block title %}Daily reports{% endblock %}
+{% block main %}
+<h1>Daily reports</h1>
+<p class="sub">Type or dictate rough notes on your phone. AI turns them into a clean report; you check it before saving.</p>
+<div class="panel">
+  <h2>New report</h2>
+  <form class="stack" hx-post="/reports/preview" hx-target="#preview" hx-indicator="#thinking">
+    <div class="row2">
+      <label>Site<select name="site_id">{% for s in sites %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}</select></label>
+      <label>Date<input type="date" name="date" value="{{ today }}" required></label>
+      <label>Your name<input name="author" required placeholder="e.g. Mina Rahimi"></label>
+    </div>
+    <label>What happened today?
+      <textarea name="raw_notes" required placeholder="e.g. 6 guys on site, sunny. framed unit 4 walls. concrete truck 2 hrs late. one guy on the roof without harness, told him"></textarea>
+    </label>
+    <div><button class="btn" type="submit">Turn notes into report</button>
+      <span id="thinking" class="htmx-indicator muted"> Reading your notes…</span></div>
+  </form>
+  <div id="preview" style="margin-top:18px"></div>
+</div>
+
+<div class="panel"><h2>Recent reports</h2>
+  <table><tr><th>Date</th><th>Site</th><th class="hide-sm">Summary</th><th>Delay</th><th>Safety</th></tr>
+  {% for r in reports %}
+    <tr><td><a href="/reports/{{ r.id }}">{{ r.date }}</a></td><td>{{ r.site }}<div class="muted small">{{ r.author }}</div></td>
+    <td class="hide-sm">{{ r.summary }}</td>
+    <td>{% if r.delay_hours %}<span class="pill warn">{{ r.delay_hours }} h</span>{% else %}<span class="pill grey">none</span>{% endif %}</td>
+    <td>{% if r.safety %}<span class="pill bad">issue</span>{% else %}<span class="pill ok">clear</span>{% endif %}</td></tr>
+  {% else %}<tr><td colspan="5" class="muted">No reports yet. Write the first one above.</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

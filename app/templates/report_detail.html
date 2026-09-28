@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% block title %}Report {{ r.date }}{% endblock %}
+{% block main %}
+<p><a href="/reports">← All reports</a></p>
+<h1>{{ r.site }}</h1>
+<p class="sub">{{ r.date }} · by {{ r.author }} · crew {{ r.crew_count if r.crew_count is not none else '—' }} · {{ r.weather or 'weather not noted' }}</p>
+{% if r.safety %}<div class="flag" style="margin-bottom:18px"><b>Safety</b>
+{{ r.safety }}</div>{% endif %}
+<div class="panel"><h2>Summary</h2><p>{{ r.summary or '—' }}</p></div>
+<div class="cols">
+  <div class="panel"><h2>Work done</h2><p class="pre">{{ r.work_done or '—' }}</p></div>
+  <div class="panel"><h2>Delays{% if r.delay_hours %} · {{ r.delay_hours }} h{% endif %}</h2><p class="pre">{{ r.delays or 'None' }}</p>
+    <h2 style="margin-top:18px">Materials needed</h2><p class="pre">{{ r.materials or 'None' }}</p></div>
+</div>
+<details class="panel"><summary>Original notes</summary><p class="pre muted">{{ r.raw_notes }}</p></details>
+{% endblock %}

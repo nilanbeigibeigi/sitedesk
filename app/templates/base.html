@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}SiteDesk{% endblock %} · SiteDesk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Barlow+Condensed:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/htmx.min.js"></script>
+</head>
+<body>
+<header><div class="bar">
+  <a class="logo" href="/">SiteDesk</a>
+  <nav aria-label="Main">
+    <a href="/" {% if page=='dash' %}aria-current="page"{% endif %}>Dashboard</a>
+    <a href="/reports" {% if page=='reports' %}aria-current="page"{% endif %}>Daily reports</a>
+    <a href="/certs" {% if page=='certs' %}aria-current="page"{% endif %}>Certificates</a>
+    <a href="/rfis" {% if page=='rfis' %}aria-current="page"{% endif %}>RFIs</a>
+  </nav>
+</div></header>
+<main>{% block main %}{% endblock %}</main>
+</body>
+</html>

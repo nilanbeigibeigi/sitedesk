@@ -1,0 +1,10 @@
+<tr id="rfi-{{ r.id }}" class="{{ 'overdue' if r.overdue }}">
+  <td><b>{{ r.number }}</b> {{ r.subject }}<div class="muted small">{{ r.site }}</div></td>
+  <td class="hide-sm small">{{ r.question }}</td>
+  <td>{{ r.to_party }}</td>
+  <td>{% if r.status == 'open' %}<span class="pill {{ 'bad' if r.overdue else 'grey' }}">{{ r.due_on }}</span>{% else %}<span class="pill ok">Answered</span>{% endif %}</td>
+  <td>{% if r.status == 'open' %}
+    <form hx-post="/rfis/{{ r.id }}/answer" hx-target="#rfi-{{ r.id }}" hx-swap="outerHTML" style="display:flex;gap:6px">
+      <input name="answer" placeholder="Paste the answer" required style="margin:0"><button class="btn small dark">Save</button></form>
+  {% else %}<span class="small">{{ r.answer }}</span>{% endif %}</td>
+</tr>

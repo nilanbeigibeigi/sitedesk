@@ -1,0 +1,48 @@
+{% extends "base.html" %}{% block title %}Dashboard{% endblock %}
+{% block main %}
+<h1>Today on site</h1>
+<p class="sub">What needs attention across all active sites. Sample data — all sites, clients and workers are fictional.</p>
+<div class="grid">
+  <div class="kpi {{ 'bad' if not_cleared else 'ok' }}"><b>{{ not_cleared|length }}</b><span>workers not cleared for site</span></div>
+  <div class="kpi {{ 'warn' if expiring else 'ok' }}"><b>{{ expiring|length }}</b><span>certificates expired or expiring in 30 days</span></div>
+  <div class="kpi {{ 'bad' if rfis|selectattr('overdue')|list else 'ok' }}"><b>{{ rfis|selectattr('overdue')|list|length }} / {{ rfis|length }}</b><span>open RFIs overdue</span></div>
+  <div class="kpi {{ 'warn' if delay_hours else 'ok' }}"><b>{{ delay_hours|round(1) }} h</b><span>delays reported in the last 7 days</span></div>
+</div>
+
+{% if safety %}
+<div class="panel"><h2>Safety issues this week</h2>
+  {% for s in safety %}<p class="flag"><b>{{ s.site }}</b> · {{ s.date }} — {{ s.safety }} <a href="/reports/{{ s.id }}">Open report</a></p>{% endfor %}
+</div>
+{% endif %}
+
+<div class="cols">
+  <div class="panel"><h2>Certificates to renew</h2>
+    <table><tr><th>Worker</th><th>Certificate</th><th>Status</th></tr>
+    {% for c in expiring %}
+      {% set st = cert_status(c.expires_on) %}{% set dl = days_left(c.expires_on) %}
+      <tr><td>{{ c.worker }}<div class="muted small">{{ c.site }}</div></td><td>{{ c.cert_type }}</td>
+      <td><span class="pill {{ 'bad' if st=='expired' else 'warn' }}">{{ 'Expired ' ~ (-dl) ~ ' days ago' if st=='expired' else 'Expires in ' ~ dl ~ ' days' }}</span></td></tr>
+    {% else %}<tr><td colspan="3" class="muted">All certificates are valid for the next 30 days.</td></tr>{% endfor %}
+    </table>
+  </div>
+  <div class="panel"><h2>Open RFIs</h2>
+    <table><tr><th>RFI</th><th>Waiting on</th><th>Due</th></tr>
+    {% for r in rfis %}
+      <tr class="{{ 'overdue' if r.overdue }}"><td><b>{{ r.number }}</b> {{ r.subject }}<div class="muted small">{{ r.site }}</div></td>
+      <td>{{ r.to_party }}</td>
+      <td><span class="pill {{ 'bad' if r.overdue else 'grey' }}">{{ (-days_left(r.due_on)) ~ ' days late' if r.overdue else r.due_on }}</span></td></tr>
+    {% else %}<tr><td colspan="3" class="muted">No open RFIs.</td></tr>{% endfor %}
+    </table>
+  </div>
+</div>
+
+<div class="panel"><h2>Active sites</h2>
+  <table><tr><th>Site</th><th class="hide-sm">Client</th><th>Crew</th><th>Last daily report</th><th class="hide-sm">Target end</th></tr>
+  {% for s in sites %}
+    <tr><td><b>{{ s.name }}</b><div class="muted small">{{ s.city }}</div></td><td class="hide-sm">{{ s.client }}</td><td>{{ s.crew }}</td>
+    <td>{% if s.last_report %}{% set ago = -days_left(s.last_report) %}<span class="pill {{ 'ok' if ago <= 1 else 'warn' }}">{{ 'today' if ago == 0 else 'yesterday' if ago == 1 else ago ~ ' days ago' }}</span>{% else %}<span class="pill bad">none yet</span>{% endif %}</td>
+    <td class="hide-sm">{{ s.target_end }}</td></tr>
+  {% endfor %}
+  </table>
+</div>
+{% endblock %}
